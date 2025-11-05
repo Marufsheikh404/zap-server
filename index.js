@@ -29,16 +29,26 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
 
-          const percelCollection = client.db('ZapDB').collection('percelCollection');
+        const percelCollection = client.db('ZapDB').collection('percelCollection');
 
 
+
+        app.post('/percels', async (req, res) => {
+            try {
+                const percelData = req.body;
+                const result = await percelCollection.insertOne(percelData);
+                res.send(result);
+            } catch(error){
+                res.status(500).send({message:'fail to add percel', error})
+            }
+          })
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
-        await client.close();
+        // await client.close();
     }
 }
 run().catch(console.dir);
