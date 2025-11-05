@@ -32,12 +32,29 @@ async function run() {
         const percelCollection = client.db('ZapDB').collection('percelCollection');
 
 
-        app.get('/percels',async(req,res)=>{
-            try{
+        app.get('/percels', async (req, res) => {
+            try {
                 const result = await percelCollection.find().toArray()
                 res.send(result);
+            } catch (error) {
+                res.status(500).send({ message: 'fail to fetch percel', error })
+            }
+        });
+
+        app.get('/percels', async (req, res) => {
+            try {
+                const userEmail = req.query.email;
+                const query = userEmail ?{ userEmail: userEmail }: {};
+                const option = {
+                    sort: {
+                        createdAt:-1
+                    }
+                }
+                const percel = await percelCollection.find(query, option).toArray()
+                res.send(percel)
             } catch(error){
-                res.status(500).send({message:'fail to fetch percel',error})
+                console.log('faild fetching to error', error)
+                res.status(500).send({message:'fail to get percel'})
             }
         })
 
@@ -46,10 +63,10 @@ async function run() {
                 const percelData = req.body;
                 const result = await percelCollection.insertOne(percelData);
                 res.send(result);
-            } catch(error){
-                res.status(500).send({message:'fail to add percel', error})
+            } catch (error) {
+                res.status(500).send({ message: 'fail to add percel', error })
             }
-          })
+        })
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
