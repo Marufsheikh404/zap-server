@@ -32,6 +32,14 @@ async function run() {
         const percelCollection = client.db('ZapDB').collection('percelCollection');
 
 
+        app.get('/percels',async(req,res)=>{
+            try{
+                const result = await percelCollection.find().toArray()
+                res.send(result);
+            } catch(error){
+                res.status(500).send({message:'fail to fetch percel',error})
+            }
+        })
 
         app.post('/percels', async (req, res) => {
             try {
